@@ -68,7 +68,9 @@ data class Gamer(var nome: String, var email: String) {
         }
     var idInterno: String? = null
         private set
+    val plano: PlanoAvulso = PlanoAvulso("BRONZE")
     val jogosBuscados = mutableListOf<Jogo?>()
+    val jogosAlugados = mutableListOf<Aluguel>()
 
     constructor(nome: String, email: String, dataNascimento: String, usuario: String) :
             this(nome, email) {
@@ -96,6 +98,12 @@ data class Gamer(var nome: String, var email: String) {
         if (!regex.matches(email)) {
             throw IllegalArgumentException("E-mail Inválido!")
         }
+    }
+
+    fun alugaJogo(jogo: Jogo, periodo: Periodo) : Aluguel {
+        val aluguel = Aluguel(this, jogo, periodo)
+        jogosAlugados.add(aluguel)
+        return aluguel
     }
 
     companion object{
