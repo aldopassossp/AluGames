@@ -52,11 +52,12 @@
 //}
 package br.com.alura.alugames.modelo
 
+import com.sun.org.apache.xerces.internal.impl.dv.xs.BaseDVFactory
 import org.example.br.com.alura.alugames.modelo.Jogo
 import kotlin.random.Random
 import java.util.Scanner
 
-data class Gamer(var nome: String, var email: String) {
+data class Gamer(var nome: String, var email: String): Recomendavel {
 
     var dataNascimento: String? = null
     var usuario: String? = null
@@ -68,9 +69,17 @@ data class Gamer(var nome: String, var email: String) {
         }
     var idInterno: String? = null
         private set
-    val plano: PlanoAvulso = PlanoAvulso("BRONZE")
+    var plano: Plano = PlanoAvulso("BRONZE")
     val jogosBuscados = mutableListOf<Jogo?>()
     val jogosAlugados = mutableListOf<Aluguel>()
+    private val listaNotas = mutableListOf<Int>()
+
+    override val media: Double
+        get() = listaNotas.average()
+
+    override fun recomendar(nota: Int) {
+        listaNotas.add(nota)
+    }
 
     constructor(nome: String, email: String, dataNascimento: String, usuario: String) :
             this(nome, email) {
@@ -84,7 +93,13 @@ data class Gamer(var nome: String, var email: String) {
     }
 
     override fun toString(): String {
-        return "Gamer(nome='$nome', email='$email', dataNascimento=$dataNascimento, usuario=$usuario, idInterno=$idInterno)"
+        return "Gamer \n" +
+                "Nome= $nome \n" +
+                "E-mail= $email \n" +
+                "Data de Nascimento= $dataNascimento \n" +
+                "Usuario= $usuario \n" +
+                "IdInterno= $idInterno \n" +
+                "Reputação = $media"
     }
 
     private fun criarIdInterno() {
@@ -104,6 +119,11 @@ data class Gamer(var nome: String, var email: String) {
         val aluguel = Aluguel(this, jogo, periodo)
         jogosAlugados.add(aluguel)
         return aluguel
+    }
+
+    fun jogosDoMes(mes:Int): List<Jogo> {
+        return jogosAlugados.filter { aluguel -> aluguel.periodo.dataInicial.monthValue == mes }
+            .map{aluguel -> aluguel.jogo}
     }
 
     companion object{
